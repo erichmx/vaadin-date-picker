@@ -26,7 +26,8 @@ env:
       --sauce="OS X 10.11/ipad@9.2"
       --sauce="Linux/android@5.1"
 script:
-  - gulp lint:html
-  - gulp lint:js
-  - travis_retry wct $BROWSERS
-  - travis_retry wct $BROWSERS test/shadow.html
+  - echo $BROWSERS
+  # - gulp lint:html
+  # - gulp lint:js
+  # - travis_retry wct $BROWSERS
+  # - travis_retry wct $BROWSERS test/shadow.html
