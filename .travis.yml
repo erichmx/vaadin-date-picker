@@ -6,10 +6,10 @@ cache:
   directories:
     - node_modules
 install:
-  - npm install
-  - npm install -g bower
-  - bower install
-  - npm install -g web-component-tester
+  # - npm install
+  # - npm install -g bower
+  # - bower install
+  # - npm install -g web-component-tester
 env:
   # desktop
   - >
