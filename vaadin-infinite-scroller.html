@@ -39,7 +39,7 @@ This program is available under Apache License Version 2.0, available at https:/
         width: 100%;
         box-sizing: border-box;
         padding-right: 40px;
-        @apply(--vaadin-infinite-scroller-buffer);
+        @apply --vaadin-infinite-scroller-buffer;
       }
 
       :host(:not([init-animation-done])) .buffer > * {
@@ -61,7 +61,10 @@ This program is available under Apache License Version 2.0, available at https:/
 </dom-module>
 
 <script>
-  Polymer({
+(function() {
+  var templatizer = new Polymer.Templatizer();
+
+    Polymer({
     is: 'vaadin-infinite-scroller',
 
     behaviors: [
@@ -142,7 +145,7 @@ This program is available under Apache License Version 2.0, available at https:/
         // Once the first set of items start fading in, stamp the rest
         this._buffers.forEach(function(buffer, bufferIndex) {
           [].forEach.call(buffer.children, function(itemWrapper, index) {
-            this._ensureStampedInstance(itemWrapper);
+            this._ensureStampedInstance(itemWrapper, bufferIndex);
           }.bind(this));
         }, this);
 
@@ -156,12 +159,12 @@ This program is available under Apache License Version 2.0, available at https:/
 
     ready: function() {
       this._bufferHeight = this.itemHeight * this.bufferSize;
-      this._buffers = Polymer.dom(this.root).querySelectorAll('.buffer');
+      this._buffers = [].slice.call(Polymer.dom(this.root).querySelectorAll('.buffer'));
 
       this.$.fullHeight.style.height = this._initialScroll * 2 + 'px';
 
       var template = Polymer.dom(this).querySelector('template');
-      this.templatize(template);
+      this._templatized = templatizer.templatize(template, {instanceProps:{ index: true }, fwdHostPropToInstance: this._forwardParentProp.bind(this)});
 
       // Firefox interprets elements with overflow:auto as focusable
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1069739
@@ -169,6 +172,7 @@ This program is available under Apache License Version 2.0, available at https:/
       if (isFirefox) {
         this.$.scroller.tabIndex = -1;
       }
+      this._activated(true);
     },
 
     _translateBuffer: function(up) {
@@ -280,7 +284,7 @@ This program is available under Apache License Version 2.0, available at https:/
           this.async(function(itemWrapper, container) {
             // Only stamp the visible instances first
             if (this._isVisible(itemWrapper, container)) {
-              this._ensureStampedInstance(itemWrapper);
+              this._ensureStampedInstance(itemWrapper, i);
             }
           }.bind(this, itemWrapper, container), 1); // Wait for first reset
 
@@ -290,17 +294,17 @@ This program is available under Apache License Version 2.0, available at https:/
       }, this);
     },
 
-    _ensureStampedInstance: function(itemWrapper) {
+    _ensureStampedInstance: function(itemWrapper, bufferIndex) {
       if (itemWrapper.firstElementChild) {
         return;
       }
 
       var tmpInstance = itemWrapper.instance;
-      itemWrapper.instance = this.stamp({});
+      itemWrapper.instance = new this._templatized(this, {index: bufferIndex});
       Polymer.dom(itemWrapper).appendChild(itemWrapper.instance.root);
 
       Object.keys(tmpInstance).forEach(function(prop) {
-        itemWrapper.instance[prop] = tmpInstance[prop];
+        itemWrapper.instance.forwardProperty(prop, tmpInstance[prop]);
       });
     },
 
@@ -332,11 +336,17 @@ This program is available under Apache License Version 2.0, available at https:/
      * Called as side-effect of a host property change, responsible for
      * notifying parent path change on each row.
      */
-    _forwardParentProp: function(prop, value) {
+    _forwardParentProp: function(template, prop, value) {
       if (prop !== 'index') {
         this._buffers.forEach(function(buffer) {
           [].forEach.call(buffer.children, function(itemWrapper) {
-            itemWrapper.instance[prop] = value;
+            if(itemWrapper.instance.forwardProperty) {
+              /*let oldValue = itemWrapper.instance[prop];
+              if(itemWrapper.instance[prop] != value)
+                itemWrapper.instance[prop] = value;
+              else*/
+                itemWrapper.instance.forwardProperty(prop, value);
+            }
           });
         });
       }
@@ -351,6 +361,7 @@ This program is available under Apache License Version 2.0, available at https:/
       if (prop !== 'index') {
         this._buffers.forEach(function(buffer) {
           [].forEach.call(buffer.children, function(itemWrapper) {
+            itemWrapper.instance.forwardProperty(prop, value);
             itemWrapper.instance.notifyPath(prop, value, true);
           });
         });
@@ -358,4 +369,5 @@ This program is available under Apache License Version 2.0, available at https:/
     }
 
   });
+})();
 </script>

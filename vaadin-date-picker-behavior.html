@@ -172,8 +172,7 @@
        */
       i18n: {
         type: Object,
-        value: function() {
-          return {
+        value: {
             monthNames: [
               'January', 'February', 'March', 'April', 'May',
               'June', 'July', 'August', 'September', 'October', 'November', 'December'
@@ -224,7 +223,7 @@
             formatTitle: function(monthName, fullYear) {
               return monthName + ' ' + fullYear;
             }
-          };
+
         }
       },
 
@@ -302,6 +301,11 @@
       'focus-input': '_focusAndSelect'
     },
 
+    attached: function() {
+      // Workaround for bug in iron-dropdown 2.0-preview, does not check if sizingTarget is null in refit
+      this.$.dropdown.sizingTarget = this.$.dropdown.sizingTarget || this.$.dropdown.containedElement;
+    },
+
     ready: function() {
       // The value property is also defined in IronFormElementBehavior, which
       // will mix up the default value if set in the property.
@@ -374,9 +378,9 @@
     },
 
     _focusedDateChanged: function(focusedDate, formatDate) {
-      if (!this._ignoreFocusedDateChange && !this._noInput) {
+      /*if (!this._ignoreFocusedDateChange && !this._noInput) {
         this._inputValue = focusedDate ? formatDate(focusedDate) : '';
-      }
+      }*/
     },
 
     _hasValue: function(value) {
@@ -550,7 +554,7 @@
     _onScroll: function(e) {
       if (e.target === window || !this.$.overlay.contains(e.target)) {
         this.$.dropdown.style.bottom = 'auto';
-        this.$.dropdown.resetFit();
+        //this.$.dropdown.resetFit();
         this._updateAlignmentAndPosition();
         this.$.dropdown.fire('iron-resize');
       }

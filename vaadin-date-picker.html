@@ -143,11 +143,11 @@ If you want to replace the default input field with a custom implementation, you
       }
 
       #clear iron-icon {
-        @apply(--vaadin-date-picker-clear-icon);
+        @apply --vaadin-date-picker-clear-icon;
       }
 
       #calendar iron-icon {
-        @apply(--vaadin-date-picker-calendar-icon);
+        @apply --vaadin-date-picker-calendar-icon;
       }
 
       :host([disabled]) #calendar,
@@ -180,32 +180,40 @@ If you want to replace the default input field with a custom implementation, you
         disabled$="[[disabled]]"
         role="application"
         always-float-label="[[_computeAlwaysFloatLabel(placeholder)]]">
-      <label id="label" aria-hidden="true">[[label]]</label>
-      <input id="input"
-          is="iron-input"
-          autocomplete="off"
-          type="text"
+      <label id="label" aria-hidden="true" for="input" slot="label">[[label]]</label>
+      <iron-input id="input"
+          
           on-focus="_focus"
-          value="{{_userInputValue::input}}"
+          
           name$="[[name]]"
-          placeholder$="[[placeholder]]"
-          aria-label$="[[label]]"
           invalid="{{invalid}}"
           required$="[[required]]"
           validator="[[validator]]"
           disabled$="[[disabled]]"
           readonly$="[[readonly]]"
-          no-input$="[[_noInput]]" />
-      <div suffix id="clear" on-tap="_clear" role="button" aria-label$="[[i18n.clear]]">
+          no-input$="[[_noInput]]" 
+          slot="input" >
+              <input value="{{_userInputValue::input}}"
+                autocomplete="off"
+                type="text"
+                on-focus="_focus"
+                placeholder$="[[placeholder]]"
+                aria-label$="[[label]]"
+                disabled$="[[disabled]]"
+                readonly$="[[readonly]]"
+
+              >
+          </iron-input>
+      <div suffix id="clear" on-tap="_clear" role="button" aria-label$="[[i18n.clear]]" slot="sufix">
         <iron-icon icon="vaadin-date-picker:clear"></iron-icon>
         <paper-ripple class="circle" center></paper-ripple>
       </div>
-      <div suffix id="calendar" on-tap="_toggle" role="button" aria-label$="[[i18n.calendar]]" aria-expanded$="[[_getAriaExpanded(opened)]]">
+      <div suffix id="calendar" on-tap="_toggle" role="button" aria-label$="[[i18n.calendar]]" aria-expanded$="[[_getAriaExpanded(opened)]]" slot="sufix">
         <iron-icon icon="vaadin-date-picker:event"></iron-icon>
         <paper-ripple class="circle" center></paper-ripple>
       </div>
       <template is="dom-if" if="[[errorMessage]]">
-        <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
+        <paper-input-error aria-live="assertive" slot="add-on">[[errorMessage]]</paper-input-error>
       </template>
     </paper-input-container>
 
@@ -283,7 +291,10 @@ If you want to replace the default input field with a custom implementation, you
          */
         errorMessage: String,
 
-        _userInputValue: String
+        _userInputValue: {
+          type: String,
+          notify: true
+        }
       },
 
       observers: [
