@@ -666,8 +666,8 @@
       }
     },
 
-    _userInputValueChanged: function() {
-      var parsedDate = this.i18n.parseDate && this.i18n.parseDate(this._inputValue);
+    _userInputValueChanged: function(newValue /*this._inputValue has not be bound yet*/) {
+      var parsedDate = this._smartDateParse(newValue, this._selectedDate || this._focusedDate, this._selectedDate || this._focusedDate)//this.i18n.parseDate && this.i18n.parseDate(this._inputValue);
       if (this._isValidDate(parsedDate)) {
         this._ignoreFocusedDateChange = true;
         this._focusedDate = parsedDate;
@@ -679,6 +679,39 @@
         // iOS needs a refit after input blur animation has finished
         this.$.dropdown.async(this.$.dropdown.refit, 500);
       }
+    },
+
+    _smartDateParse: function(text, baseDate, defaultDate) {
+      console.log(arguments)
+      if(!baseDate)
+        return this.i18n.parseDate && this.i18n.parseDate(text);
+      
+      var res = new Date(baseDate.getTime());
+      var parts = /^(\d{4})[-/ ]?(\d{1,2})?[-/ ]?(\d{1,2})?$/.exec(text);
+      if(parts) {
+        res.setFullYear(parseInt(parts[1]));
+        if(parts[2]) res.setMonth(parseInt(parts[2]) - 1);
+        if(parts[3]) res.setDate(parseInt(parts[3]));
+        console.log(res)
+        return res;
+      }
+      var parts = /^(\d{1,2})[-/ ]?(\d{1,2})?[-/ ]?(\d{2}|\d{4})?$/.exec(text);
+      if(parts) {
+        res.setDate(parseInt(parts[1])); //TODO: workaround for the country which does not format dates going from smaller to larger time intervals (MM/dd/yyyy)!
+        if(parts[2]) res.setMonth(parseInt(parts[2]) - 1);
+        if(parts[3]) {
+          var year = parseInt(parts[3]);
+          if (parts[3].length < 3 && year >= 0) {
+            year += year < 50 ? 2000 : 1900;
+          }          
+          res.setFullYear(year);
+        }
+        console.log("second")
+        console.log(res)
+        return res;
+      }
+
+      return defaultDate;
     },
 
     _announceFocusedDate: function(_focusedDate, opened, _ignoreAnnounce) {

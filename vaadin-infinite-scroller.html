@@ -341,10 +341,10 @@ This program is available under Apache License Version 2.0, available at https:/
         this._buffers.forEach(function(buffer) {
           [].forEach.call(buffer.children, function(itemWrapper) {
             if(itemWrapper.instance.forwardProperty) {
-              /*let oldValue = itemWrapper.instance[prop];
+              let oldValue = itemWrapper.instance[prop];
               if(itemWrapper.instance[prop] != value)
                 itemWrapper.instance[prop] = value;
-              else*/
+              else
                 itemWrapper.instance.forwardProperty(prop, value);
             }
           });
