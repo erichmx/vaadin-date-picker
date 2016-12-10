@@ -172,58 +172,59 @@
        */
       i18n: {
         type: Object,
-        value: {
-            monthNames: [
-              'January', 'February', 'March', 'April', 'May',
-              'June', 'July', 'August', 'September', 'October', 'November', 'December'
-            ],
-            weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-            weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-            firstDayOfWeek: 0,
-            week: 'Week',
-            calendar: 'Calendar',
-            clear: 'Clear',
-            today: 'Today',
-            cancel: 'Cancel',
-            formatDate: function(d) {
-              var year = d.getFullYear();
-              var yearString = year.toString();
-              if (yearString.length < 3 && year >= 0) {
-                yearString = (year < 10 ? '000' : '00') + year;
-              }
-              return (d.getMonth() + 1) + '/' + d.getDate() + '/' + yearString;
-            },
-            parseDate: function(text) {
-              var parts = text.split('/');
-              var today = new Date();
-              var date, month = today.getMonth(), year = today.getFullYear();
-
-              if (parts.length === 3) {
-                year = parseInt(parts[2]);
-                if (parts[2].length < 3 && year >= 0) {
-                  year += year < 50 ? 2000 : 1900;
+        value: function() {
+           return {
+              monthNames: [
+                'January', 'February', 'March', 'April', 'May',
+                'June', 'July', 'August', 'September', 'October', 'November', 'December'
+              ],
+              weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+              weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+              firstDayOfWeek: 0,
+              week: 'Week',
+              calendar: 'Calendar',
+              clear: 'Clear',
+              today: 'Today',
+              cancel: 'Cancel',
+              formatDate: function(d) {
+                var year = d.getFullYear();
+                var yearString = year.toString();
+                if (yearString.length < 3 && year >= 0) {
+                  yearString = (year < 10 ? '000' : '00') + year;
                 }
-                month = parseInt(parts[0]) - 1;
-                date = parseInt(parts[1]);
-              } else if (parts.length === 2) {
-                month = parseInt(parts[0]) - 1;
-                date = parseInt(parts[1]);
-              } else if (parts.length === 1) {
-                date = parseInt(parts[0]);
-              }
+                return (d.getMonth() + 1) + '/' + d.getDate() + '/' + yearString;
+              },
+              parseDate: function(text) {
+                var parts = text.split('/');
+                var today = new Date();
+                var date, month = today.getMonth(), year = today.getFullYear();
 
-              if (date !== undefined) {
-                var result = new Date(0, 0); // Wrong date (1900-01-01), but with midnight in local time
-                result.setFullYear(year);
-                result.setMonth(month);
-                result.setDate(date);
-                return result;
-              }
-            },
-            formatTitle: function(monthName, fullYear) {
-              return monthName + ' ' + fullYear;
-            }
+                if (parts.length === 3) {
+                  year = parseInt(parts[2]);
+                  if (parts[2].length < 3 && year >= 0) {
+                    year += year < 50 ? 2000 : 1900;
+                  }
+                  month = parseInt(parts[0]) - 1;
+                  date = parseInt(parts[1]);
+                } else if (parts.length === 2) {
+                  month = parseInt(parts[0]) - 1;
+                  date = parseInt(parts[1]);
+                } else if (parts.length === 1) {
+                  date = parseInt(parts[0]);
+                }
 
+                if (date !== undefined) {
+                  var result = new Date(0, 0); // Wrong date (1900-01-01), but with midnight in local time
+                  result.setFullYear(year);
+                  result.setMonth(month);
+                  result.setDate(date);
+                  return result;
+                }
+              },
+              formatTitle: function(monthName, fullYear) {
+                return monthName + ' ' + fullYear;
+              }
+          };
         }
       },
 
@@ -378,7 +379,8 @@
     },
 
     _focusedDateChanged: function(focusedDate, formatDate) {
-      /*if (!this._ignoreFocusedDateChange && !this._noInput) {
+      /* this is dependent in Polymer lifecycle and changed completely on 2.0-Preview (Dec 2016) 
+      if (!this._ignoreFocusedDateChange && !this._noInput) {
         this._inputValue = focusedDate ? formatDate(focusedDate) : '';
       }*/
     },
