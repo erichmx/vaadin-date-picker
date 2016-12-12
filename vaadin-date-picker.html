@@ -73,7 +73,7 @@ If you want to replace the default input field with a custom implementation, you
   <template>
     <style>
       :host {
-        display: block;
+        display: inline-block;
       }
 
       #overlay {
@@ -88,6 +88,8 @@ If you want to replace the default input field with a custom implementation, you
       #inputcontainer,
       #inputcontainer input {
         cursor: pointer;
+        border:none;
+        width:100%;
       }
 
       #inputcontainer:focus {
