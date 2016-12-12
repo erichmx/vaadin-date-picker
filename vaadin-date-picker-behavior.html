@@ -172,7 +172,8 @@
        */
       i18n: {
         type: Object,
-        value: {
+        value: function() {
+           return {
             monthNames: [
               'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
               'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -212,18 +213,18 @@
                 date = parseInt(parts[1]);
               }
 
-              if (date !== undefined) {
-                var result = new Date(0, 0); // Wrong date (1900-01-01), but with midnight in local time
-                result.setFullYear(year);
-                result.setMonth(month);
-                result.setDate(date);
-                return result;
+                if (date !== undefined) {
+                  var result = new Date(0, 0); // Wrong date (1900-01-01), but with midnight in local time
+                  result.setFullYear(year);
+                  result.setMonth(month);
+                  result.setDate(date);
+                  return result;
+                }
+              },
+              formatTitle: function(monthName, fullYear) {
+                return monthName + ' ' + fullYear;
               }
-            },
-            formatTitle: function(monthName, fullYear) {
-              return monthName + ' ' + fullYear;
-            }
-
+          };
         }
       },
 
@@ -378,7 +379,8 @@
     },
 
     _focusedDateChanged: function(focusedDate, formatDate) {
-      /*if (!this._ignoreFocusedDateChange && !this._noInput) {
+      /* this is dependent in Polymer lifecycle and changed completely on 2.0-Preview (Dec 2016) 
+      if (!this._ignoreFocusedDateChange && !this._noInput) {
         this._inputValue = focusedDate ? formatDate(focusedDate) : '';
       }*/
     },
