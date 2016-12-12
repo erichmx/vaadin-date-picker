@@ -276,16 +276,16 @@ This program is available under Apache License Version 2.0, available at https:/
         for (var i = 0; i < this.bufferSize; i++) {
           var itemWrapper = document.createElement('div');
           itemWrapper.style.height = this.itemHeight + 'px';
-          itemWrapper.instance = {};
+          itemWrapper.instance = { index: i};
 
           Polymer.dom(buffer).appendChild(itemWrapper);
 
-          this.async(function(itemWrapper, container) {
+          this.async(function(itemWrapper, container, index) {
             // Only stamp the visible instances first
             if (this._isVisible(itemWrapper, container)) {
-              this._ensureStampedInstance(itemWrapper, i);
+              this._ensureStampedInstance(itemWrapper, index);
             }
-          }.bind(this, itemWrapper, container), 1); // Wait for first reset
+          }.bind(this, itemWrapper, container, (i)), 1); // Wait for first reset
 
           Polymer.RenderStatus.afterNextRender(itemWrapper, this._finishInit.bind(this));
 
